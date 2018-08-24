@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec: 
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mariadb
+          image: 192.168.99.1:5000/mariadb
+          ports:
+            - containerPort: 3306
+          env:
+          # The MySQL image will configure a root password with the value of MYSQL_ROOT_PASSWORD...
+            - name: MYSQL_ROOT_PASSWORD
+              value: mypass 
+    
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /var/lib/mysql
+      imagePullSecrets:
+        - name: my-secret
+      volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: mariadb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+spec:
+  type: ClusterIP
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mysql
+

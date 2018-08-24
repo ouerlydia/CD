@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: glpi
+  labels:
+    app: glpi
+spec: 
+  selector:
+    matchLabels:
+      app: glpi 
+  template:
+    metadata:
+      labels:
+        app: glpi
+    spec:
+      containers:
+        - name: hpg
+          image: 192.168.99.1:5000/hpg
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /var/www/html/config 
+      imagePullSecrets:
+        - name: my-secret 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																							
+      volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: hpg
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: glpi
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: glpi
+  type: NodePort
+
